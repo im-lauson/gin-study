@@ -56,10 +56,18 @@ func _xml(x *gin.Context) {
 	x.XML(http.StatusOK, user)
 }
 
-/**
+/*
+*
 响应xml、html、yaml
 */
-
+func _redirect(c *gin.Context) {
+	c.Redirect(302, "http://www.baidu.com")
+}
+func Index(context *gin.Context) {
+	//相应字符串 string
+	context.String(200, "hello")
+	context.String(http.StatusOK, "hello")
+}
 func main() {
 	//创建一个路由
 	Route := gin.Default()
@@ -67,6 +75,25 @@ func main() {
 	Route.GET("/string", _string)
 	Route.GET("/json", _json)
 	Route.GET("/xml", _xml)
+	//重定向响应
+	Route.GET("/baidu", _redirect)
+	//绑定路由规则和路由函数，访问file路径，交由相应的函数去处理
+	//在golang中没有相对路径，只有相对项目路径
+	Route.StaticFile("/logo", "./static/logo.jpg")
+
+	//配置单个文件
+	Route.StaticFS("/static", http.Dir("static/static"))
+
+	//绑定路由规则和路由函数，访问index的路由，交由对应的函数去处理
+	Route.GET("/index", Index) //引用函数也可
+	//route.GET("/index",func(context *gin.Context) {
+	//	context.String(200, "hello")
+	//})
+
+	//启动监听，gin会把web服务启动在8080端口
+	//route.Run(":8080")
+	//http.ListenAndServe(":8080", Route)
+
 	//启动监听，gin会把web服务启动在8080端口
 	Route.Run(":8080")
 }
